@@ -6,6 +6,16 @@ import numpy as np
 import OpenPromptInjection as PI
 from OpenPromptInjection.utils import open_config
 
+# ── Ollama patch ──────────────────────────────────────────────────────────────
+from ollama_model import OllamaModel
+
+_original_create_model = PI.create_model
+def _patched_create_model(config):
+    if config["model_info"]["provider"] == "ollama":
+        return OllamaModel(config)
+    return _original_create_model(config)
+PI.create_model = _patched_create_model
+# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Open Prompt Injection Experiments')
